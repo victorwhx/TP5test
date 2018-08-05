@@ -136,7 +136,7 @@ class User extends Base
 
         //去掉表单中为空的数据,即没有修改的内容
         foreach ($param as $key => $value ){
-            if (!empty($value)){
+            if (!is_null($value)){
                 $data[$key] = $value;
             }
         }
@@ -156,5 +156,12 @@ class User extends Base
         } else {
             return ['status'=>0, 'message'=>'更新失败,请检查'];
         }
+    }
+
+    public function deleteUser(Request $request)
+    {
+        $user_id = $request->param('id');
+        Tp5User::update(['is_delete'=>1],['id'=>$user_id]);
+        Tp5User::destroy($user_id);
     }
 }
