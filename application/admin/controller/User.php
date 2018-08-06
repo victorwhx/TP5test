@@ -148,34 +148,23 @@ class User extends Base
         $userEmail = trim($request->param('email'));
         $status = 1;
         $message = '邮箱可用';
+        //$data = ['email'=>$userEmail];
 
         if (Tp5User::get(['email'=>$userEmail])) {
             $status = 0;
             $message = '邮箱重复，请重新输入。';
         }
-
-        $rule = ['email|邮箱' => 'require|email'];
-        $result = $this->validate($userEmail, $rule);
-
-        if ($result === false)
+        else
         {
-            $status = 0;
-            $message = '错误';
-        }
-        else {
-                $message = 'OK';
+            $result = $this->validate(['email'=>$userEmail], ['email|邮箱'=>'require|email']);
+            if ($result !== true)
+            {
+                $status = 0;
+                $message = '邮箱格式不对！';
+            }
         }
 
         return ['status'=>$status, 'message'=>$message];
-    }
-
-    public function adminAdd()
-    {
-        $this->assign('title', '添加管理员');
-        $this->assign('keywords', 'php');
-        $this->assign('desc', '教学管理系统');
-
-        return $this->view->fetch('admin_add');
     }
 
     public function addUser(Request $request)
@@ -190,6 +179,7 @@ class User extends Base
             'email|邮箱' => 'require|email'
         ];
 
+        //dump($data);
         $result = $this->validate($data, $rule);
 
         if ($result === true)
@@ -208,6 +198,15 @@ class User extends Base
         }
 
         return ['status'=>$status, 'message'=>$message];
+    }
+
+    public function adminAdd()
+    {
+        $this->assign('title', '添加管理员');
+        $this->assign('keywords', 'php');
+        $this->assign('desc', '教学管理系统');
+
+        return $this->view->fetch('admin_add');
     }
 
     public function editUser(Request $request)

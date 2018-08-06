@@ -79,10 +79,9 @@
                 data: {name:$(this).val()},
                 dataType: 'json',
                 success: function(data){
-                    if (data.status == 1) {
+                    if (data.status != 1) {
                        alert(data.message);
-                    } else {
-                       alert(data.message);
+                       $("#submit").addClass('disabled');
                     }
                 }
             });
@@ -96,10 +95,9 @@
                 data:{email:$(this).val()},
                 dataType: 'json',
                 success: function(data){
-                    if (data.status == 1) {
+                    if (data.status != 1) {
                         alert(data.message);
-                    } else {
-                        alert(data.message);
+                        $("#submit").addClass('disabled');
                     }
                 }
             });
@@ -108,7 +106,7 @@
         $("#submit").on("click", function(event){
             $.ajax({
                 type: "POST",
-                url: "{:url('user/addUser')}",
+                url: "addUser",
                 data: $("#form-admin-add").serialize(),
                 dataType: "json",
                 success: function(data){
@@ -117,7 +115,7 @@
 
                     } else {
                         alert(data.message);
-
+                        $("#submit").addClass('disabled');
                     }
                 }
             });
