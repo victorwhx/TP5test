@@ -129,6 +129,86 @@ class User extends Base
         return $this->view->fetch('admin_edit');
     }
 
+    public function checkUserName(Request $request)
+    {
+        $userName = trim($request->param('name'));
+        $status=1;
+        $message = '用户名可用';
+
+        if (Tp5User::get(['name'=>$userName])) {
+            $status = 0;
+            $message = '用户名重复，请重新输入。';
+        }
+
+        return ['status'=>$status, 'message'=>$message];
+    }
+
+    public function checkUserEmail(Request $request)
+    {
+        $userEmail = trim($request->param('email'));
+        $status = 1;
+        $message = '邮箱可用';
+        //$data = ['email'=>$userEmail];
+
+        if (Tp5User::get(['email'=>$userEmail])) {
+            $status = 0;
+            $message = '邮箱重复，请重新输入。';
+        }
+        else
+        {
+            $result = $this->validate(['email'=>$userEmail], ['email|邮箱'=>'require|email']);
+            if ($result !== true)
+            {
+                $status = 0;
+                $message = '邮箱格式不对！';
+            }
+        }
+
+        return ['status'=>$status, 'message'=>$message];
+    }
+
+    public function addUser(Request $request)
+    {
+        $data = $request->param();
+        $status = 1;
+        $message = '添加成功';
+
+        $rule = [
+            'name|用户名' => "require|min:3|max:10",
+            'password|密码' => "require|min:3|max:10",
+            'email|邮箱' => 'require|email'
+        ];
+
+        //dump($data);
+        $result = $this->validate($data, $rule);
+
+        if ($result === true)
+        {
+            $user = Tp5User::create($request->param());
+            if ($user === null)
+            {
+                $status = 0;
+                $message = '添加失败！';
+            }
+        }
+        else
+        {
+            $status = 0;
+            $message = '验证失败！';
+        }
+
+        return ['status'=>$status, 'message'=>$message];
+    }
+
+    public function adminAdd()
+    {
+        $this->assign('title', '添加管理员');
+        $this->assign('keywords', 'php');
+        $this->assign('desc', '教学管理系统');
+
+        return $this->view->fetch('admin_add');
+    }
+
     public function editUser(Request $request)
     {
         //获取表单返回的数据
@@ -158,10 +238,17 @@ class User extends Base
         }
     }
 
+    public function unDelete()
+    {
+        //软删除恢复，将is_delete字段清零，delete_time字段恢复为NULL
+        $result = Tp5User::update(['delete_time'=>NULL, 'is_delete'=>0],
+                                  ['is_delete'=>1]);
+    }
+
     public function deleteUser(Request $request)
     {
         $user_id = $request->param('id');
-        Tp5User::update(['is_delete'=>1],['id'=>$user_id]);
+        Tp5User::update(['is_delete'=>1,],['id'=>$user_id]);
         Tp5User::destroy($user_id);
     }
 }
