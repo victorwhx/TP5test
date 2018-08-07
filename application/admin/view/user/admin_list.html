@@ -140,11 +140,25 @@ function admin_del(obj,id){
 //批量恢复
 function unDelete()
 {
-	layer.confirm('确认要恢复吗？', function () {
-		$.get("{:url('user/unDelete')}");
+	layer.confirm('确认要恢复吗？', function (index) {
 
-		layer.msg('已恢复！', {icon:1, time:1000});  //消息弹层1s后消失
-		window.location.reload();	                //重新加载页面，显示所有数据
+		$.ajax({
+			type: 'GET',
+			url: "couldRecover",
+
+			success: function(data){
+				if (data.status == 0) {
+				   alert(data.message);
+				   layer.close(index);
+				}
+				else {
+					$.get("{:url('user/unDelete')}");
+
+					layer.msg('已恢复！', {icon:1, time:1000});  //消息弹层1s后消失
+					window.location.reload();	                //重新加载页面，显示所有数据
+				}
+			}
+		});
 	});
 }
 
