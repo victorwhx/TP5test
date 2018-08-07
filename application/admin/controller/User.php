@@ -238,6 +238,25 @@ class User extends Base
         }
     }
 
+    public function couldRecover()        //判断当前是否存在可恢复的数据
+    {
+        $where = function($query)
+        {
+            $query->field(['id'])->where('is_delete','=',1);
+        };
+
+        $result = Tp5User::withTrashed()->select($where);
+        if (empty($result))
+        {
+            return ['status'=>0, 'message'=>'暂无可更新的数据'];
+        }
+        else
+        {
+            return ['status'=>1];
+        }
+
+    }
+
     public function unDelete()
     {
         //软删除恢复，将is_delete字段清零，delete_time字段恢复为NULL
