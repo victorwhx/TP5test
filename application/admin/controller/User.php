@@ -2,6 +2,7 @@
 namespace app\admin\controller;
 use think\Request;
 use app\admin\model\Tp5User;
+use app\admin\model\Tp5Cmplnt;
 use think\Session;
 
 class User extends Base
@@ -269,5 +270,68 @@ class User extends Base
         $user_id = $request->param('id');
         Tp5User::update(['is_delete'=>1,],['id'=>$user_id]);
         Tp5User::destroy($user_id);
+    }
+
+    public function cmplntManage()
+    {
+        $this->assign('title', '投诉管理');
+        $this->assign('keywords', 'cmplnt_mng');
+        $this->assign('desc', 'page for complant management');
+
+        $this-> view -> count = Tp5Cmplnt::count();
+
+        $list = Tp5Cmplnt::all();
+
+        $this->assign('list', $list);
+
+        return $this->fetch('cmplnt_mng');
+    }
+
+    public function cmplntAdd()
+    {
+        $this->assign('title', '新增投诉记录');
+        $this->assign('keywords', 'cmplnt_add');
+        $this->assign('desc', '添加一条新的投诉记录');
+
+        return $this->view->fetch('cmplnt_add');
+    }
+
+    public function cmplntNew(Request $request)
+    {
+        $data = $request->param();
+        dump($data);
+        $status = 1;
+        $message = '添加成功';
+
+        $rule = [
+            'name|用户名' => "require|min:1|max:10",
+        ];
+
+        $result = $this->validate($data, $rule);
+
+        if ($result === true)
+        {
+            $user = Tp5Cmplnt::create($request->param());
+
+            if ($user === null)
+            {
+                $status = 0;
+                $message = '添加失败！';
+            }
+        }
+        else
+        {
+            $status = 0;
+            $message = '验证失败！';
+        }
+
+        return ['status'=>$status, 'message'=>$message];
+    }
+
+    public function cmplntDelete(Request $request)
+    {
+        $user_id = $request->param('id');
+        Tp5Cmplnt::update(['is_delete'=>1,],['id'=>$user_id]);
+        Tp5Cmplnt::destroy($user_id);
     }
 }
