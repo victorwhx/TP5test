@@ -3,6 +3,7 @@ namespace app\admin\controller;
 use think\Request;
 use app\admin\model\Tp5User;
 use think\Session;
+use think\Db;
 
 class User extends Base
 {
@@ -12,20 +13,44 @@ class User extends Base
         return $this->fetch();
     }
 
-    public function adminList()
+    public function adminList(Request $request)
     {
         $this->assign('title', 'Admin List');
         $this->assign('keywords', 'PHP教学管理系统');
         $this->assign('desc', '教学案例');
 
         $this-> view -> count = Tp5User::count();
+        $data = $request->param();
+        // if (empty($data))
+        // {
+        //     dump("hello");
+        // }
+        // else
+        // {
+        //     dump($data);
+        //}
 
         //判断当前是不是admin用户
         //先通过session获取到用户登陆名
         $userName = Session::get('user_info.name');
         if ($userName == 'admin')
         {
-            $list = Tp5User::all();
+            //$list = Tp5User::all();
+            //$map['login_time'] = array('> time', '2018-7-1');
+            if (empty($data))
+            {
+                $sDate = 0;
+                $eDate = 253402185600;
+            }
+            else
+            {
+                $sDate = $data['sDate'];
+                $eDate = $data['eDate'];
+            }
+            $map['login_time'] = array('between time', ["$sDate", "$eDate 23:59:59"]);
+            $map['status'] = 1;
+
+            $list = Db::table('tp5_user')->where($map)->select();
         }
         else
         {
