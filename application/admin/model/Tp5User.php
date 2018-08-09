@@ -10,6 +10,7 @@ class Tp5User extends Model
 
     //设置软删除字段，该字段只有为NULL时，才会被显示
     protected $deleteTime = 'delete_time';
+    protected $autoWriteTimestamp = 'true';  
 
     public function getRoleAttr($value)
     {

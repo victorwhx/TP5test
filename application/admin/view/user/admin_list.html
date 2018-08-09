@@ -15,12 +15,19 @@
 <div class="page-container">
 	<!--如果是admin显示用户数量,其它用户没必要显示-->
 	{eq name="$Think.session.user_info.name" value="admin"}
+	<form action="" method="post" class="form form-horizontal" id="form-select-date">
+		<div class="cl pd-5 bg-1 bk-gray mt-20"> 选择日期：
+			<input type="date" name="sDate" class="input-text Wdate" style="width:140px;" /> ~
+			<input type="date" name="eDate" class="input-text Wdate" style="width:140px;" />
+			<button type="submit" class="btn btn-success" id="sltDate" name=""><i class="Hui-iconfont">&#xe665;</i>查询</button>
+		</div>
+	</form>
 	<div class="cl pd-5 bg-1 bk-gray mt-20">
 		<span class="l">
 			<a href="javascript:;" onclick="unDelete()" class="btn btn-danger radius">
-				<i class="Hui-iconfont">&#xe6e2;</i> 批量恢复</a>
-				<a href="javascript:;" onclick="admin_add('添加管理员','{:url("user/adminAdd")}','800','500')" class="btn btn-primary radius">
-			    <i class="Hui-iconfont">&#xe600;</i> 添加管理员</a>
+			<i class="Hui-iconfont">&#xe6e2;</i> 批量恢复</a>
+			<a href="javascript:;" onclick="admin_add('添加管理员','{:url("user/adminAdd")}','800','500')" class="btn btn-primary radius">
+			<i class="Hui-iconfont">&#xe600;</i> 添加管理员</a>
 		</span>
 		<span class="r">共有数据：<strong>{$count}</strong> 条</span>
 	</div>
@@ -50,7 +57,7 @@
 				<td>{$vo.email}</td>
 				<td>{$vo.role}</td>
 				<td>{$vo.login_count}</td>
-				<td>{$vo.login_time}</td>
+				<td>{$vo['login_time']|date="Y-m-d",###}</td>
 				<td class="td-status">  {//根据当前用户状态,设置启用样式}
 					{if condition="$vo.status eq '已启用'"}
 					<span class="label label-success radius">{$vo.status}</span>
@@ -193,5 +200,15 @@ function admin_start(obj,id){
 		layer.msg('已启用!', {icon: 6,time:1000});
 	});
 }
+
+$("#sltDate").on("click", function(event){
+	$.ajax({
+		type: "GET",
+		url: "adminList",
+		data: $("#form-select-date").serialize(),
+		dataType: "json",
+	});
+})
+
 </script>
 {/block}
