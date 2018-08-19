@@ -295,4 +295,40 @@ class User extends Base
         Tp5User::update(['is_delete'=>1,],['id'=>$user_id]);
         Tp5User::destroy($user_id);
     }
+
+    public function list_download()
+    {
+        $sDate = 0;
+        $eDate = 253402185600;
+        $name = 'test';
+
+        $map['login_time'] = array('between time', ["$sDate", "$eDate 23:59:59"]);
+        $map['status'] = 1;
+
+        $list = Db::table('tp5_user')->field(['id','name','email'])->where($map)->select();
+
+        ob_end_clean();
+        //ob_start();
+        header("Content-type:application/octet-stream");           //excel
+        header("Accept-Ranges:bytes");
+        header("Content-type:application/vnd.ms-excel");
+        header("Content-Disposition:attachment;filename=test.xls");
+        header("Pragma: no-cache");
+
+        // header("Cache-Control: public");               //word
+        // header("Content-type: application/octet-stream");
+        // header("Accept-Ranges: bytes");
+        // header('Content-Disposition: attachment; filename='.$name.'.doc');
+        // header("Pragma:no-cache");
+        // header("Expires:0");
+
+        $name = iconv("UTF-8", "GB2312", "姓名");
+        $mail = iconv("UTF-8", "GB2312", "邮箱");
+        echo "ID\t".$name."\t".$mail."\t\n";
+        for ($i=0; $i<count($list); $i++)
+        {
+            echo $list[$i]['id']."\t".iconv("UTF-8", "GB2312", $list[$i]['name'])."\t".$list[$i]['email']."\t\n";
+        }
+        exit();
+    }
 }
