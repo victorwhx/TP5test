@@ -295,4 +295,47 @@ class User extends Base
         Tp5User::update(['is_delete'=>1,],['id'=>$user_id]);
         Tp5User::destroy($user_id);
     }
+
+    public function list_download()
+    {
+        $sDate = 0;
+        $eDate = 253402185600;
+        $name = 'test';
+
+        $map['login_time'] = array('between time', ["$sDate", "$eDate 23:59:59"]);
+        $map['status'] = 1;
+
+        $list = Db::table('tp5_user')->field(['id','name','email'])->where($map)->select();
+
+        ob_end_clean();
+        ob_start();
+        header("Content-type:application/octet-stream");           //excel
+        header("Accept-Ranges:bytes");
+        header("Content-type:application/vnd.ms-excel");
+        header("Content-Disposition:attachment;filename=test.xls");
+        header("Pragma: no-cache");
+
+        $name = iconv("UTF-8", "GB2312", "姓名");
+        $mail = iconv("UTF-8", "GB2312", "邮箱");
+        //echo "ID\t".$name."\t".$mail."\t\n";
+        echo '<table width=500 height=25 border=0 align=center cellpadding=0 cellspacing=0>';
+            echo '<thead><tr>';    //设置thead输出
+                echo '<td style="border:1px solid black;padding:10px;text-align:left;"><b>' . 'ID' . '</b></td>';
+                echo '<td style="border:1px solid black;padding:10px;text-align:left;"><b>' . $name . '</b></td>';
+                echo '<td style="border:1px solid black;padding:10px;text-align:left;"><b>' . $mail . '</b></td>';
+            echo '</thead></tr>';
+
+            echo '<tbody>';
+            for ($i=0; $i<count($list); $i++)
+            {
+                echo '<tr>';
+                    echo '<td style="border:1px solid black;padding:10px;text-align:left;">' . $list[$i]['id'] . '</td>';
+                    echo '<td style="border:1px solid black;padding:10px;text-align:left;">' . iconv("UTF-8", "GB2312", $list[$i]['name']) . '</td>';
+                    echo '<td style="border:1px solid black;padding:10px;text-align:left;">' . $list[$i]['email'] . '</td>';
+                echo '</tr>';
+            }
+            echo '</tbody>';
+        echo '</table>';
+        exit();
+    }
 }

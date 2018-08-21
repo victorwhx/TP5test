@@ -28,6 +28,7 @@
 			<i class="Hui-iconfont">&#xe6e2;</i> 批量恢复</a>
 			<a href="javascript:;" onclick="admin_add('添加管理员','{:url("user/adminAdd")}','800','500')" class="btn btn-primary radius">
 			<i class="Hui-iconfont">&#xe600;</i> 添加管理员</a>
+			<a class="btn btn-primary radius mr-5" href="{:url('admin/User/list_download',array('count'=>$count))}"><i class="Hui-iconfont"></i>列表导出</a>
 		</span>
 		<span class="r">共有数据：<strong>{$count}</strong> 条</span>
 	</div>
@@ -116,6 +117,7 @@ function admin_add(title,url,w,h){
 	$.post(url);
 	layer_show(title,url,w,h);
 }
+
 
 /*管理员-删除*/
 // function admin_del(obj,id){
