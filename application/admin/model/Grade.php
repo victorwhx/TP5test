@@ -28,7 +28,7 @@ class Grade extends Model
     public function teacher()
     {
         //班级表与教师表1对1关联
-        return $this->hasOne('Teacher');
+        return $this->hasOne('teacher');
     }
 
     //定义关联方法
