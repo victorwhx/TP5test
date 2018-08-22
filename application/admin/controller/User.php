@@ -239,7 +239,7 @@ class User extends Base
         //获取表单返回的数据
         $param = $request -> param();
 
-        //去掉表单中为空的数据,即没有修改的内容
+        //去掉表单中为空的数据,即没有修改的内容，防止空数据修改了原内容
         foreach ($param as $key => $value ){
             if (!is_null($value)){
                 $data[$key] = $value;
@@ -279,7 +279,6 @@ class User extends Base
         {
             return ['status'=>1];
         }
-
     }
 
     public function unDelete()

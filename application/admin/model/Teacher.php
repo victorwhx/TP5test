@@ -33,7 +33,7 @@ class Teacher extends Model
     public function grade()
     {
         // 教师表teacher BELONGS TO 关联班级grade
-        return $this->belongsTo('Grade');
+        return $this->belongsTo('grade');
     }
 
     public function getDegreeAttr($value)

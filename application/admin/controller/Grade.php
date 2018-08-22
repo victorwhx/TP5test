@@ -145,13 +145,33 @@ class Grade extends Base
         GradeModel::destroy($grade_id);
     }
 
-    //恢复删除操作
-    public function unDelete()
+    public function couldRecover()        //判断当前是否存在可恢复的数据
     {
-        GradeModel::update(['delete_time'=>NULL, 'is_delete'=>0],['is_delete'=>1]);
+        $where = function($query)
+        {
+            $query->field(['id'])->where('is_delete','=',1);
+        };
+        $result = GradeModel::withTrashed()->select($where);
+
+        $i = 0;
+        $data = [];
+        foreach ($result as $value) {
+            $data[$i++] = $value->id;
+        }
+
+        if (empty($result))
+        {
+            return ['status'=>0, 'message'=>'暂无可更新的数据'];
+        }
+        else    //存在可恢复的数据，按id进行恢复
+        {
+            for ($i=0; $i<count($data); $i++)
+            {
+                GradeModel::update(['delete_time'=>NULL, 'is_delete'=>0],['id'=>$data[$i]]);
+            }
+            return ['status'=>1];
+        }
     }
-
-
 
 
 
